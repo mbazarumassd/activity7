@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scatter Plot Visualization</title>
+    <link rel="stylesheet" href="./styles/style.css">
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        svg {
+            width: 40vw;
+            height: 40vw;
+        }
+        div {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .list-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 50vw;
+            padding: 20px;
+            background-color: #f3f3f3;
+            border-left: 1px solid #ccc;
+            overflow-y: auto;
+        }
+        .list-container h3 {
+            font-size: 18px;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        #selected-list {
+            padding: 10px;
+            list-style-type: none;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            max-height: 100%;
+            overflow-y: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex-grow: 1;
+        }
+        #selected-list li {
+            padding: 10px;
+            margin: 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #555;
+        }
+        #selected-list li:last-child {
+            border-bottom: none;
+        }
+    </style>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+<div>
+    <svg viewBox="0 0 1000 1000" id="figure1"></svg>
+    <svg viewBox="0 0 1000 1000" id="figure2"></svg>
+</div>
+<div class="list-container">
+    <h3>Selected Data Points:</h3>
+    <ul id="selected-list"></ul>
+</div>
+<script src="./js/scatterplot.problem.js"></script>
+<script>
+    d3.csv("./data/car_sample_data.csv")
+        .then(data => {
+            console.log("Data loaded:", data);
+
+            scatter_plot(
+                data,
+                "#figure1",
+                title = "MPG vs Price",
+                xCol = "Price",
+                yCol = "MPG",
+                rCol = "Weight",
+                legend = [],
+                colorCol = "Country",
+                margin = 150
+            );
+
+            scatter_plot(
+                data,
+                "#figure2",
+                title = "MPG vs Engine Size",
+                xCol = "EngineSizeCI",
+                yCol = "MPG",
+                rCol = "Weight",
+                legend = [],
+                colorCol = "Country",
+                margin = 150
+            );
+
+            document.addEventListener("click", event => {
+                // Reset selected points when clicking on empty space
+                const clickedOnSVG = event.target.closest("svg");
+                if (!clickedOnSVG) {
+                    d3.selectAll("circle").classed("selected", false);
+                    d3.select("#selected-list").selectAll("li").remove();
+                }
+            });
+        })
+        .catch(error => console.error("Error loading data:", error));
+</script>
+</body>
+</html>
